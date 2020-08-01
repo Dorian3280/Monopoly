@@ -12,7 +12,6 @@ import Family from './ui/Family';
 import Name from './ui/Name';
 import Price from './ui/Price';
 import Image from './ui/Image';
-import TextOrientation from './ui/TextOrientation';
 
 const boxesRender = [];
 
@@ -28,9 +27,20 @@ boxes.forEach((box) => {
             { ((box.type === 'property') || (box.type === 'station') || (box.type === 'company')) ? 
                 <Fragment>
                     <Family color={box.color} side={box.grid.side}></Family>
-                    <Name side={box.grid.side}><TextOrientation side={box.grid.side}>ap</TextOrientation></Name>
+                    <Name side={box.grid.side}>{box.name}</Name>
                     <Image side={box.grid.side}></Image>
-                    <Price side={box.grid.side}><TextOrientation side={box.grid.side}>€ {box.propertyCost}</TextOrientation></Price>
+                    <Price side={box.grid.side}>€ {box.propertyCost}</Price>
+                </Fragment> : ''}
+            { (box.type === 'tax') ? 
+                <Fragment>
+                    <Name side={box.grid.side}>{box.name}</Name>
+                    <Image side={box.grid.side}></Image>
+                    <Price side={box.grid.side}>€ {box.taxCost}</Price>
+                </Fragment> : ''}
+            { ((box.type === 'chance') || (box.type === 'community') || (box.type === 'corner')) ? 
+                <Fragment>
+                    <Name side={box.grid.side}>{box.name}</Name>
+                    <Image side={box.grid.side}></Image>
                 </Fragment> : ''}
             </Flex>
         </Box>

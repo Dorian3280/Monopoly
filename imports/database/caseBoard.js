@@ -1,7 +1,7 @@
 export const boxes = [
     {
         id: 1,
-        type: 'start',
+        type: 'corner',
         name: 'Départ',
         color: null,
         owned: null,
@@ -11,7 +11,7 @@ export const boxes = [
     {
         id: 2,
         type: 'property',
-        name: "boulevard de belleville",
+        name: "Boulevard de Belleville",
         rent: 2,
         house_1: 10,
         house_2: 30,
@@ -137,7 +137,7 @@ export const boxes = [
     },
     {
         id: 11,
-        type: 'jail',
+        type: 'corner',
         name: 'Simple visite',
         nameBis: 'Prison',
         grid: { corner: 'top-right', row: 1, column: 11}
@@ -289,7 +289,7 @@ export const boxes = [
     },
     {
         id: 21,
-        type: 'parking',
+        type: 'corner',
         name: 'Parc Gratuit',
         grid: { corner: 'bottom-right', row: 11, column: 11}
     },
@@ -441,7 +441,7 @@ export const boxes = [
     },
     {
         id: 31,
-        type: 'goToJail',
+        type: 'corner',
         name: 'Allez en Prison',
         grid: { corner: 'bottom-left', row: 11, column: 1}
     },

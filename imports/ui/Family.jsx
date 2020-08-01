@@ -1,14 +1,11 @@
 import styled from 'styled-components';
 
 const item = styled.div`
-    ${( {side} ) => {
-    if ((side === 'top') || (side === 'bottom')) {
-        return `height`;
-    }
-    return `width`;
-    }}: 20%;
+    
+    width: 100%;
+    height: 20%;
     background: ${({ color }) => color};
-    border-${({ side }) => side}: 3px solid black;
+    border-bottom: 3px solid black;
 `;
 
 export default item;
