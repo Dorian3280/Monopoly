@@ -10,9 +10,8 @@ TODO: Describe the installation process
 
 TODO: Write usage instructions
 
-- Get the board responsive : width of the board depends on the height with css only
+- Get the first commit and keep going with this code to get the board responsive and resizable (basically good css code)
 - Find a way to get parent's props with styled-components
-- Make the box of the board unresizable
 
 ## Contributing
 
