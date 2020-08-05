@@ -4,14 +4,9 @@ import styled from 'styled-components';
 import { boxes } from '/imports/database/caseBoard';
 import SessionContext from '/imports/components/SessionContext';
 
+import Console from '/imports/Console/Console';
 import Box from '/imports/ui/Board/Box/Box';
 import Token from '/imports/ui/Board/Token';
-
-const BoardCenter = styled.div`
-    grid-row: 2 / 11;
-    grid-column: 2 / 11;
-    background: #CDE6D0;
-`;
 
 const Board = ( {className} ) => {
 
@@ -21,7 +16,7 @@ const Board = ( {className} ) => {
         <div className={className}>
             {players.map((player) => <Token player={player} key={player.id} location={player.location}></Token>)}
             {boxes.map((box) => <Box box={box} key={box.id}></Box>)}
-            <BoardCenter></BoardCenter>
+            <Console></Console>
         </div>
     );
 };

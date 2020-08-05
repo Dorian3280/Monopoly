@@ -1,3 +1,7 @@
+#################################
+###### PROJECT PAUSED !!!! ######
+#################################
+
 ## Project Name
 
 Monopoly Online using React with Meteor
@@ -7,6 +11,9 @@ Monopoly Online using React with Meteor
 - Get the first commit and keep up with this code to get the board responsive and resizable (basically good css code)
 OR
 - Use Canvas
+- For myself =>
+    Faire la console avec les dés, les actions et tout, l'historique de ce qu'il s'est passé en bas (reprise du projet github https://github.com/jotitan/monopoly)
+    Le déplacement du pion, je ne sais pas encore comment gérer, position absolute, transform translate...
 
 ## Contributing
 
