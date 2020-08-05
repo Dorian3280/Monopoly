@@ -10,6 +10,7 @@ export const boxes = [
     },
     {
         id: 2,
+        idProperty: 1,
         type: 'property',
         name: "Boulevard de Belleville",
         rent: 2,
@@ -35,6 +36,7 @@ export const boxes = [
     },
     {
         id: 4,
+        idProperty: 2,
         type: 'property',
         name: "Rue Lecourbe",
         rent: 4,
@@ -61,6 +63,7 @@ export const boxes = [
     },
     {
         id: 6,
+        idProperty: 23,
         type: 'station',
         name: "Gare Montparnasse",
         rent: 50,
@@ -74,6 +77,7 @@ export const boxes = [
     },
     {
         id: 7,
+        idProperty: 3,
         type: 'property',
         name: "Rue Vaugirard",
         rent: 6,
@@ -99,6 +103,7 @@ export const boxes = [
     },
     {
         id: 9,
+        idProperty: 4,
         type: 'property',
         name: "Rue de Courcelles",
         rent: 6,
@@ -118,6 +123,7 @@ export const boxes = [
     },
     {
         id: 10,
+        idProperty: 5,
         type: 'property',
         name: "Avenue de la République",
         rent: 8,
@@ -144,6 +150,7 @@ export const boxes = [
     },
     {
         id: 12,
+        idProperty: 6,
         type: 'property',
         name: "Boulevard de la Villette",
         rent: 10,
@@ -163,6 +170,7 @@ export const boxes = [
     },
     {
         id: 13,
+        idProperty: 27,
         type: 'company',
         name: "Compagnie de distribution d'electricité",
         rent: 4,
@@ -176,6 +184,7 @@ export const boxes = [
     },
     {
         id: 14,
+        idProperty: 7,
         type: 'property',
         name: "Avenue de Neuilly",
         rent: 10,
@@ -195,6 +204,7 @@ export const boxes = [
     },
     {
         id: 15,
+        idProperty: 8,
         type: 'property',
         name: "Rue de Paradis",
         rent: 12,
@@ -214,6 +224,7 @@ export const boxes = [
     },
     {
         id: 16,
+        idProperty: 24,
         type: 'station',
         name: "Gare de Lyon",
         rent: 50,
@@ -227,6 +238,7 @@ export const boxes = [
     },
     {
         id: 17,
+        idProperty: 9,
         type: 'property',
         name: "Avenue Mozart",
         rent: 14,
@@ -252,6 +264,7 @@ export const boxes = [
     },
     {
         id: 19,
+        idProperty: 10,
         type: 'property',
         name: "Boulevard Saint-Michel",
         rent: 14,
@@ -271,6 +284,7 @@ export const boxes = [
     },
     {
         id: 20,
+        idProperty: 11,
         type: 'property',
         name: "Place Pigalle",
         rent: 16,
@@ -295,6 +309,7 @@ export const boxes = [
     },
     {
         id: 22,
+        idProperty: 12,
         type: 'property',
         name: "Avenue Matignon",
         rent: 18,
@@ -320,6 +335,7 @@ export const boxes = [
     },
     {
         id: 24,
+        idProperty: 13,
         type: 'property',
         name: "Boulevard Malesherbes",
         rent: 18,
@@ -339,6 +355,7 @@ export const boxes = [
     },
     {
         id: 25,
+        idProperty: 14,
         type: 'property',
         name: "Avenue Henri-Martin",
         rent: 20,
@@ -358,6 +375,7 @@ export const boxes = [
     },
     {
         id: 26,
+        idProperty: 25,
         type: 'station',
         name: "Gare du Nord",
         rent: 50,
@@ -371,6 +389,7 @@ export const boxes = [
     },
     {
         id: 27,
+        idProperty: 15,
         type: 'property',
         name: "Faubourg Saint-Honoré",
         rent: 22,
@@ -390,6 +409,7 @@ export const boxes = [
     },
     {
         id: 28,
+        idProperty: 16,
         type: 'property',
         name: "Place de la Bourse",
         rent: 22,
@@ -409,6 +429,7 @@ export const boxes = [
     },
     {
         id: 29,
+        idProperty: 28,
         type: 'company',
         name: "Compagnie de distribution des eaux",
         rent: 4,
@@ -422,6 +443,7 @@ export const boxes = [
     },
     {
         id: 30,
+        idProperty: 17,
         type: 'property',
         name: "Rue de la Fayette",
         rent: 24,
@@ -447,6 +469,7 @@ export const boxes = [
     },
     {
         id: 32,
+        idProperty: 18,
         type: 'property',
         name: "Avenue Breteil",
         rent: 26,
@@ -466,6 +489,7 @@ export const boxes = [
     },
     {
         id: 33,
+        idProperty: 19,
         type: 'property',
         name: "Avenue Foch",
         rent: 26,
@@ -491,6 +515,7 @@ export const boxes = [
     },
     {
         id: 35,
+        idProperty: 20,
         type: 'property',
         name: "Boulevard des Capucines",
         rent: 28,
@@ -510,6 +535,7 @@ export const boxes = [
     },
     {
         id: 36,
+        idProperty: 26,
         type: 'station',
         name: "Gare Saint-Lazare",
         rent: 50,
@@ -530,6 +556,7 @@ export const boxes = [
     {
         id: 38,
         type: 'property',
+        idProperty: 21,
         name: "Avenue des Champs-Elysées",
         rent: 35,
         house_1: 175,
@@ -555,6 +582,7 @@ export const boxes = [
     },
     {
         id: 40,
+        idProperty: 22,
         type: 'property',
         name: "Rue de la Paix",
         rent: 50,
