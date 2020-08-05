@@ -1,16 +1,12 @@
 ## Project Name
 
-TODO: Write a project description
+Monopoly Online using React with Meteor
 
-## Installation
-
-TODO: Describe the installation process
-
-## Usage
-
-TODO: Write usage instructions
+## TODO List
 
 - Get the first commit and keep going with this code to get the board responsive and resizable (basically good css code)
+OR
+- Use Canvas
 
 ## Contributing
 
@@ -20,10 +16,6 @@ TODO: Write usage instructions
 4. Push to the branch: `git push origin my-new-feature`
 5. Submit a pull request :D
 
-## History
-
-TODO: Write history
-
 ## Credits
 
-TODO: Write credits
+@ All Right 2020 Verdon Dorian
