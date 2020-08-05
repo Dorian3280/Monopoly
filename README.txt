@@ -27,9 +27,3 @@ TODO: Write history
 ## Credits
 
 TODO: Write credits
-
-## Codes trash
-
-- regex :
-
-    - \[([0-9]+), ([0-9]+)\] -> one or more digit in array of 2 length
