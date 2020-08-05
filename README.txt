@@ -4,7 +4,7 @@ Monopoly Online using React with Meteor
 
 ## TODO List
 
-- Get the first commit and keep going with this code to get the board responsive and resizable (basically good css code)
+- Get the first commit and keep up with this code to get the board responsive and resizable (basically good css code)
 OR
 - Use Canvas
 
@@ -18,4 +18,4 @@ OR
 
 ## Credits
 
-@ All Right 2020 Verdon Dorian
+@ All Right Reserved 2020 Verdon Dorian
