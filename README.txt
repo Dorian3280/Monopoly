@@ -1,7 +1,3 @@
-#################################
-###### PROJECT PAUSED !!!! ######
-#################################
-
 ## Project Name
 
 Monopoly Online using Meteor with React
@@ -13,12 +9,13 @@ OR
 - Use Canvas
 
 - For myself =>
-    Faire la console avec les dés, les actions et tout, l'historique de ce qu'il s'est passé en bas (reprise du projet github https://github.com/jotitan/monopoly)
-    Déplacement du pion :
-        -> Côté client, le joueur appuie sur le bouton qui permet de lancer les dés -> appel de la fonction rollTheDice()
-        -> Côté serveur, rollTheDice() donne le montant des dés
-        -> Appel de la function updatePositionPlayer(), addition ou téléportation
-        -> par un subscribe, déplacement du pion
+
+
+// Command Line
+To RESET :
+db.database.updateMany({"boxes.idproperty": {$exists: true}}, {$set: {"boxes.$[].owned": -1}});db.players.updateMany({}, {$set: {own: []}});db.players.updateMany({}, {$set: {money: 1500}});db.players.updateMany({}, {$set: {location: 1}})
+
+
 
 ## Contributing
 
