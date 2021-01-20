@@ -4,16 +4,21 @@
 
 ## Project Name
 
-Monopoly Online using React with Meteor
+Monopoly Online using Meteor with React
 
 ## TODO List
 
-- Get the first commit and keep up with this code to get the board responsive and resizable (basically good css code)
+- Get the first commit and keep going with the code to make the board responsive and resizable (basically good css code)
 OR
 - Use Canvas
+
 - For myself =>
     Faire la console avec les dés, les actions et tout, l'historique de ce qu'il s'est passé en bas (reprise du projet github https://github.com/jotitan/monopoly)
-    Le déplacement du pion, je ne sais pas encore comment gérer, position absolute, transform translate...
+    Déplacement du pion :
+        -> Côté client, le joueur appuie sur le bouton qui permet de lancer les dés -> appel de la fonction rollTheDice()
+        -> Côté serveur, rollTheDice() donne le montant des dés
+        -> Appel de la function updatePositionPlayer(), addition ou téléportation
+        -> par un subscribe, déplacement du pion
 
 ## Contributing
 

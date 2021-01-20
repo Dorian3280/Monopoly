@@ -1,0 +1,34 @@
+@font-face {
+	font-family: 'Monopoly';
+	font-style: normal;
+	font-weight: 400;
+	src: url('fonts/monopoly.ttf') format('truetype'); /* IE9 Compat Modes */
+}
+
+body {
+	color: black;
+}
+
+.rs-modal-content {
+	padding: 15px;
+	border-radius: 8px;
+}
+
+.rs-modal-body{
+	margin-top: 0;
+	padding-bottom: 0;
+}
+.rs-modal-header {
+	margin-bottom: 20px;
+}
+.rs-modal-header .rs-modal-title {
+	 text-overflow: none;
+	 white-space: none;
+}
+.rs-modal-xs {
+	width: 300px;
+}
+
+.rs-divider-horizontal {
+	margin: 5px 0;
+}
