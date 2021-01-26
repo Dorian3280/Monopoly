@@ -8,12 +8,12 @@ import PlayerMoney from '/imports/ui/elements/PlayerMoney';
 import PlayerProperties from '/imports/ui/elements/PlayerProperties';
 import MinProperty from '/imports/ui/elements/MinProperty';
 
-const PlayersCard = ({boxes, players, currentPlayerID}) => {
+const PlayersCard = ({boxes, players}) => {
     
     return (
         <PlayersCardContainer>{
             players.map((player) =>
-                <PlayerCard key={player.id} id={player.id} currentPlayerID={currentPlayerID}>
+                <PlayerCard key={player.id} id={player.id} currentPlayerID={players.currentPlayerID}>
                     <PlayerName>{player.name}</PlayerName>
                     <PlayerMoney>{player.money} €</PlayerMoney>
                     <PlayerProperties>{

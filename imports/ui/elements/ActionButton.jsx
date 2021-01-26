@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 import Image from './Image';
 
 const ButtonRollTheDice = styled.div`
@@ -6,6 +6,10 @@ const ButtonRollTheDice = styled.div`
     margin: 0 5px;
     background-color: rgb(170, 170, 170);
     transition: 0.15s;
+    opacity: ${({active}) => active ? '1' : '0.4'};
+    
+    ${({active}) => active ? css`
+    
     cursor: pointer;
 
     &:hover {
@@ -17,6 +21,7 @@ const ButtonRollTheDice = styled.div`
             transform: translate(1px, 1px);
         }
     }
+    ` : ''}
 `;
 
 export default ButtonRollTheDice;

@@ -14,7 +14,7 @@ OR
 // Command Line
 To RESET :
 db.database.updateMany({"boxes.idproperty": {$exists: true}}, {$set: {"boxes.$[].owned": -1}});db.players.updateMany({}, {$set: {own: []}});db.players.updateMany({}, {$set: {money: 1500}});db.players.updateMany({}, {$set: {location: 1}})
-
+db.database.drop();db.players.drop();db.actionsHistory.drop();db.actionsProcess.drop();db.bank.drop()
 
 
 ## Contributing

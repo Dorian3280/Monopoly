@@ -20,79 +20,34 @@ import Token from '/imports/ui/elements/Token';
 import ModalComponent from './ModalComponent';
 
 import History from '/imports/api/actionsHistory/index';
+import ActionsProcess from '/imports/api/actionsProcess/index';
 
-const Board = ({players, currentPlayerID, boxes}) => {
-    
-    const [modalContent, setModalContent] = useState({});
+const Board = ({players, currentPlayer, boxes, cards}) => {
     const [showModal, setShowModal] = useState(false);
-    const [actionsProcess, setActionsProcess] = useState({result: [], inProgress: {}});
     const [dice1, setDice1] = useState(1);
     const [dice2, setDice2] = useState(1);
-    const [didDouble, setDidDouble] = useState(false);
     const [history, setHistory] = useState([]);
-    const [currentPlayerLocation, setCurrentPlayerLocation] = useState(0);
-
-    const actions = useMemo(() => ({
-        roll: {
-            inProgress : () => "Lancez les dés",
-            result: ({number, isDouble}) => `Votre pion avance de ${number} cases${isDouble ? ` avec un double.` : '.'}`
-        },
-        reroll: {
-            inProgress : () => "Vous avez fait un double, relancez les dés",
-            result: ({number, isDouble}) => `Votre pion encore avance de ${number} cases${isDouble ? ` avec un double.` : '.'}`
-        },
-        buyProperty: {
-            inProgress: (name) => `Voulez vous achetez ${name} ?`,
-            bought: (name) => `Vous avez achetez ${name} !`, // Ajoutez si il a complété une famille
-            notBought: (name) => `Vous n'avez pas acheté ${name}...` // Ajoutez si il a complété une famille
-        },
-        bankrupt: {
-            inProgress: () => `Vous n'avez plus d'argent, vous devez vendre quelquechose`,
-        }
-    }), []);
+    const [actions, setActions] = useState({});
 
     const setResultActionProcess = useCallback((key, key2, data) => {
-        actionsProcess.result.push(actions[key][key2](data));
-        actionsProcess.inProgress = {};
-        setActionsProcess(actionsProcess);
+        Meteor.call('actions.addResult', key, key2, data)
     }, []);
 
     const setProgressActionProcess = useCallback((key, data) => {
-        actionsProcess.inProgress.key = key;
-        actionsProcess.inProgress.message = actions[key].inProgress(data);
-        setActionsProcess(actionsProcess);
+        Meteor.call('actions.addProgress', key, data)
     }, []);
 
     const handleShowModal = useCallback(() => setShowModal(!showModal), [showModal]);
-
+   
     useEffect(() => {
-        setProgressActionProcess('roll')
-        // Test pour directement acheter
-        //setProgressActionProcess('buyProperty', 'truc')
-    }, [currentPlayerID]);
-
-    // UseTracker pour récupérer l'emplacement du pion du joueur
-    // #####################
-    const [readyTrackerPlayerLocation, trackerPlayerLocation] = useTracker(() => {
-        const publication = Meteor.subscribe('player.getLocation', currentPlayerID);
-        
-        return [
-          publication.ready(),
-          Players.findOne({}, {fields: { location: 1}})
-        ];
-    }, [Players, currentPlayerID]);
-
-    useEffect(() => {
-        if (readyTrackerPlayerLocation) setCurrentPlayerLocation(trackerPlayerLocation.location)
-    }, [trackerPlayerLocation, readyTrackerPlayerLocation]);
-
-    useEffect(() => {
-        setModalContent(boxes.find(e => e.id === currentPlayerLocation));
-    }, [currentPlayerLocation]);
-    // #####################
+        console.log(currentPlayer.state)
+        if (currentPlayer.state === 'roll') {
+            Meteor.call('actions.addProgress', 'roll')
+        }
+    }, [currentPlayer]);
 
     const [readyTrackerHistory, trackerHistory] = useTracker(() => {
-        const publication = Meteor.subscribe('history.get');
+        const publication = Meteor.subscribe('history.getHistory');
     
         return [
           publication.ready(),
@@ -103,6 +58,19 @@ const Board = ({players, currentPlayerID, boxes}) => {
     useEffect(() => {
         if (readyTrackerHistory) setHistory(trackerHistory)
     }, [trackerHistory, readyTrackerHistory]);
+
+    const [readyTrackerActions, trackerActions] = useTracker(() => {
+        const publication = Meteor.subscribe('actions.getActions');
+    
+        return [
+          publication.ready(),
+          ActionsProcess.findOne({})
+        ];
+    }, [ActionsProcess]);
+    
+    useEffect(() => {
+        if (readyTrackerActions) setActions(trackerActions)
+    }, [readyTrackerActions, trackerActions]);
 
     const rollTheDice = useCallback(() => {
         const randomTimes = Math.floor(Math.random() * 2) + 5;
@@ -116,27 +84,45 @@ const Board = ({players, currentPlayerID, boxes}) => {
                 clearInterval(interval);
                 const number = randomNumber1 + randomNumber2;
                 const isDouble = randomNumber1 === randomNumber2;
-                if (isDouble) setDidDouble(true);
+                if (!isDouble && currentPlayer.didDouble) Meteor.call('player.resetDouble', currentPlayer.id)
+                if (isDouble) Meteor.call('player.didDouble', currentPlayer.id)
                 setResultActionProcess('roll','result', {number, isDouble});
                 moveTo(number);
             }
             x++;
         }, 150);
-    }, [players, currentPlayerID, boxes]);
+    }, [players, boxes, currentPlayer]);
 
     // TODO
     // Gérer la téléportation
-    const moveTo = useCallback((numberOfCases/* , teleportation */) => {
-        const tempLocation = players[currentPlayerID].location + numberOfCases;
-        const newLocation = tempLocation - (tempLocation > 40 ? 40 : 0);
-        Meteor.call('player.updateLocation', players[currentPlayerID].id, newLocation);
-        Meteor.call('history.add', {createdAt: new Date(), type: 'move', playerID: players[currentPlayerID].id, data: {numberOfCases, endPoint: newLocation}});
+    const moveTo = useCallback((locationModifier, teleportation) => {
+        let newLocation = 0;
+        if (teleportation === undefined) {
+            const tempLocation = currentPlayer.location + locationModifier;
+            newLocation = tempLocation - (tempLocation > 40 ? 40 : 0);
+        } else {
+            newLocation = locationModifier;
+        }
+
         business(newLocation);
-    }, [players, currentPlayerID, boxes]);
+        Meteor.call('player.updateLocation', currentPlayer.id, newLocation);
+        Meteor.call('history.add', {createdAt: new Date(), type: 'move', playerID: currentPlayer.id, data: {locationModifier, endPoint: newLocation}});
+    }, [players, currentPlayer, boxes]);
+
+    const transaction = useCallback((amount, to) => {
+        const id = currentPlayer.id;
+        const isBankrupt = Meteor.call('player.updateMoney', id, amount);
+        if (to !== undefined) {
+            Meteor.call('player.updateMoney', players[to], amount);
+        }
+        if (isBankrupt) {
+            setResultActionProcess('bankrupt');
+        }
+    }, [players, currentPlayer]);
 
     const business = useCallback((location) => {
-        if (boxes.length !== 0) {
         const box = boxes.find(e => e.id === location);
+        
         switch(box.type) {
             case 'corner':
                 switch(box.id) {
@@ -156,60 +142,87 @@ const Board = ({players, currentPlayerID, boxes}) => {
                     default:
                         break;
                 }
+                endTurn();
             case 'property':
             case 'station':
             case 'company':
                 // Elle n'appartient à personne
                 if (box.owned === -1) {
                     setProgressActionProcess('buyProperty', box.name);
+                    Meteor.call('player.updateState', currentPlayer.id, 'buyProperty');
                     handleShowModal();
                     // Affichage du modal de la carte avec les différentes actions
                 }
                 // Elle appartient à quelqu'un
                 if (box.owned >= 0 && !box.mortgaged) {
-                    // payTo(to, amount)
+                    transaction(box.rent, box.owned);
+                    Meteor.call('history.add', {createdAt: new Date(), type: 'pay', playerID: currentPlayer.id, data: {to: box.owned, amount: box.rent }});
+                    endTurn();
                 }
                 break;
             case 'community':
-                // Test pour savoir si l'ordre des cartes change à l'actualisation
-                // Affichage du modal de la carte et effectuer l'action
-                break;
             case 'chance':
-                // Test pour savoir si l'ordre des cartes change à l'actualisation
-                // Affichage du modal de la carte et effectuer l'action
+                setProgressActionProcess(box.type);
+                handleShowModal();
+                Meteor.call('player.updateState', currentPlayer.id, box.type);
                 break;
             case 'tax':
-                // La banque aura son id
-                // payTo(to, amount)
+                transaction(-box.taxCost);
+                Meteor.call('history.add', {createdAt: new Date(), type: 'money', playerID: currentPlayer.id, data: -box.taxCost});
+                endTurn();
+                break;
+            default:
                 break;
         }
-    }
-    }, [boxes]);
+    }, [currentPlayer, boxes, cards, handleShowModal, setProgressActionProcess]);
 
     const buyProperty = useCallback((box) => {
-        const playerID = players[currentPlayerID].id;
+        const playerID = currentPlayer.id;
         const boxID = box.idProperty;
+        const data = { name: box.name };
+        transaction(-box.propertyCost);
         Meteor.call('player.updateOwn', playerID, boxID);
         Meteor.call('card.updateOwned', boxID, playerID);
-        payTo(-1, box.propertyCost);
+        Meteor.call('history.add', {createdAt: new Date(), type: 'purchase', playerID: currentPlayer.id, data});
         handleShowModal();
         setResultActionProcess('buyProperty','bought', box.name);
-    }, [handleShowModal, players, currentPlayerID]);
+        endTurn();
+    }, [handleShowModal, players, currentPlayer]);
 
-    const payTo = useCallback((to, amount) => {
-        const id = players[currentPlayerID].id;
-        const isBankrupt = Meteor.call('player.updateMoney', id, -amount);
-        if (to > 0) {
-            Meteor.call('player.updateMoney', players[to], amount);
+    const notBuyProperty = useCallback((box) => {
+        handleShowModal();
+        setResultActionProcess('buyProperty','notBought', box.name);
+        endTurn();
+    }, [handleShowModal, currentPlayer]);
+
+    const handleCards = useCallback((card) => {
+        const { type, data } = card.effect;
+
+        if (type === 'money') {
+            transaction(data);
+        } else if (type === 'teleportation') {
+            moveTo(data, true);
         }
-        if (isBankrupt) {
-            setResultActionProcess('bankrupt');
-        }
-    }, [players, currentPlayerID]);
+        handleShowModal();
+        setResultActionProcess('community','resume', card.resume);
+        Meteor.call('history.add', {createdAt: new Date(), type, playerID: currentPlayer.id, data});
+        Meteor.call('card.updateIndex', card.type);
+        endTurn();
+    }, [cards, players, currentPlayer]);
 
     const endTurn = useCallback(() => {
+        if (currentPlayer.didDouble) {
+            Meteor.call('player.updateState', currentPlayer.id, 'roll');
+        } else {
+            Meteor.call('player.updateState', currentPlayer.id, 'endTurn');
+        }
+    }, [players, currentPlayer]);
 
-    }, []);
+    const toNextPlayer = useCallback(() => {
+        Meteor.call('player.updateState', currentPlayer.id, 'roll');
+        Meteor.call('player.updateCurrentPlayer');
+        Meteor.call('actions.clear');
+    }, [currentPlayer]);
 
     const boxesRender = useMemo(() => boxes.map((box) =>
         <BoxContainer box={box} key={box.id}>
@@ -230,37 +243,52 @@ const Board = ({players, currentPlayerID, boxes}) => {
         </BoxContainer>)
     , [players, boxes]);
 
+    const historyRender = useMemo(() => {
+        if (players.length > 0 && boxes.length > 0) {
+            return history.map(e => <HistoryLine players={players} boxes={boxes} key={e['_id']} type={e.type} name={players[e.playerID].name} color={players[e.playerID].color} data={e.data}></HistoryLine>)
+        }
+    }, [players, history, boxes])
+
+    const actionsRender = useMemo(() => {
+        if (Object.keys(actions).length > 0) {
+            return [
+                actions.result.map((e, i) => <Span block finished={true} key={i} size={1.2} marginY={10}>{e}</Span>),
+                actions.inProgress.key !== undefined ? <Span block finished={false} key={'progress'} size={1.2} marginY={10}>{actions.inProgress.message}</Span> : ''
+            ];
+        }
+    }, [actions]);
+
+    const isPlayersLoad = useMemo(() => currentPlayer !== undefined ? currentPlayer : false, [players, currentPlayer]);
+    
     return (
         <BoardContainer>
             <ModalComponent
+                currentPlayer={currentPlayer}
+                boxes={boxes}
+                cards={cards}
                 showModal={showModal}
-                content={modalContent}
                 buyProperty={buyProperty}
-                actionsProcess={actionsProcess}
+                notBuyProperty={notBuyProperty}
+                handleCards={handleCards}
                 handleShowModal={handleShowModal}
                 setResultActionProcess={setResultActionProcess}
             ></ModalComponent>
             {boxesRender}
             <BoxCenter>
                 <TurnPlayerContainer>
-                    <Title style={{ gridArea: 'title', placeSelf: 'center' }} level={3} size={1.5}>C'est au tour de <Span size={1.8} color={players[currentPlayerID] ? players[currentPlayerID].color : ''}>{players[currentPlayerID] ? players[currentPlayerID].name : ''}</Span></Title>
-                    <Process>
-                        {actionsProcess.result.map((e, i) => <Span block finished={true} key={i} size={1.2} marginY={10}>{e}</Span>)}
-                        {actionsProcess.inProgress.key !== undefined ? <Span block finished={false} size={1.2} marginY={10}>{actionsProcess.inProgress.message}</Span> : ''}
-                    </Process>
+                    <Title style={{ gridArea: 'title', placeSelf: 'center' }} level={3} size={1.5}>C'est au tour de <Span size={1.8} color={currentPlayer ? currentPlayer.color : ''}>{currentPlayer ? currentPlayer.name : ''}</Span></Title>
+                    <Process>{actionsRender}</Process>
                     <Dices>
                         <Dice face={dice1}></Dice>
                         <Dice face={dice2}></Dice>
                     </Dices>
                     <Actions>
-                        <ActionButton onClick={rollTheDice}><Image width={40} height={40} src={`../../../images/dices.png`}></Image></ActionButton>
-                        <ActionButton onClick={handleShowModal}><Image width={30} height={40} src={`../../../images/property.jpg`}></Image></ActionButton>
-                        <ActionButton onClick={endTurn}><Image width={40} height={40} src={`../../../images/endTurn.png`}></Image></ActionButton>
+                        <ActionButton active={isPlayersLoad.state === 'roll'} onClick={() => isPlayersLoad.state === 'roll' ? rollTheDice() : undefined}><Image width={40} height={40} src={`../../../images/dices.png`}></Image></ActionButton>
+                        <ActionButton active={isPlayersLoad} onClick={handleShowModal}><Image width={30} height={40} src={`../../../images/property.jpg`}></Image></ActionButton>
+                        <ActionButton active={isPlayersLoad.state === 'endTurn'} onClick={() => isPlayersLoad.state === 'endTurn' ? toNextPlayer() : undefined}><Image width={40} height={40} src={`../../../images/endTurn.png`}></Image></ActionButton>
                     </Actions>
                 </TurnPlayerContainer>
-                <HistoryContainer>
-                    {history.map(e => <HistoryLine boxes={boxes} key={e['_id']} type={e.type} name={players[e.playerID].name} color={players[e.playerID].color} data={e.data}></HistoryLine>)}
-                </HistoryContainer>
+                <HistoryContainer>{historyRender}</HistoryContainer>
             </BoxCenter>
         </BoardContainer>
     );

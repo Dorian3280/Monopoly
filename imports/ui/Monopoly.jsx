@@ -13,9 +13,8 @@ import Database from '/imports/api/database/index';
 const Monopoly = () => {
     const [players, setPlayers] = useState([]);
     const [boxes, setBoxes] = useState([]);
-    const [chanceCards, setChanceCards] = useState([]);
-    const [communityChestCards, setCommunityChestCards] = useState([]);
-    const [currentPlayerID, setCurrentPlayerID] = useState(0);
+    const [cards, setCards] = useState({});
+    const [currentPlayer, setCurrentPlayer] = useState({});
 
     const [readyTrackerPlayers, trackerPlayers] = useTracker(() => {
         const publication = Meteor.subscribe('players.findAll');
@@ -26,13 +25,17 @@ const Monopoly = () => {
         ];
     }, [Players]);
 
-    useEffect(() => {
-        if (readyTrackerPlayers) setPlayers(trackerPlayers)
-    }, [trackerPlayers, readyTrackerPlayers]);
-
-
-    const [readyTrackerDatabase, trackerDatabase] = useTracker(() => {
+    const [readyTrackerPropertiesCards, trackerPropertiesCards] = useTracker(() => {
         const publication = Meteor.subscribe('cards.getPropertiesCards');
+        
+        return [
+            publication.ready(),
+            Database.find({}).fetch()[0]
+        ];
+    }, [Database]);
+
+    const [readyTrackerCards, trackerCards] = useTracker(() => {
+        const publication = Meteor.subscribe('cards.getCards');
     
         return [
           publication.ready(),
@@ -41,25 +44,33 @@ const Monopoly = () => {
     }, [Database]);
 
     useEffect(() => {
-        if (readyTrackerDatabase) {
-            setBoxes(trackerDatabase.boxes);
-            setChanceCards(trackerDatabase.chanceCards);
-            setCommunityChestCards(trackerDatabase.communityChestCards);
+        if (readyTrackerPlayers) {
+            const indexCurrentPlayer = trackerPlayers.splice(trackerPlayers.findIndex(e => e.currentPlayerID !== undefined), 1)[0].currentPlayerID;
+            setCurrentPlayer(trackerPlayers.find(e => e.id === indexCurrentPlayer));
+            setPlayers(trackerPlayers)
         }
-    }, [trackerDatabase, readyTrackerDatabase]);
+    }, [trackerPlayers, readyTrackerPlayers]);
+
+    useEffect(() => {
+        if (readyTrackerPropertiesCards) setBoxes(trackerPropertiesCards.boxes)
+    }, [trackerPropertiesCards, readyTrackerPropertiesCards]);
+
+    useEffect(() => {
+        if (readyTrackerCards) setCards(trackerCards.cards)
+    }, [trackerCards, readyTrackerCards]);
 
     return (
         <Container>
             <Board
                 players={players}
+                currentPlayer={currentPlayer}
                 boxes={boxes}
-                currentPlayerID={currentPlayerID}
+                cards={cards}
             ></Board>
             <Business></Business>
             <PlayersCard
                 players={players}
                 boxes={boxes}
-                currentPlayerID={currentPlayerID}
             ></PlayersCard>
         </Container>
     )
