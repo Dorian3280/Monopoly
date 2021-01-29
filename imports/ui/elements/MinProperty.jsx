@@ -1,14 +1,15 @@
 import styled from 'styled-components';
 
-const StyledMinProperty = styled.div`
-    border: 2px solid black;
+const MinProperty = styled.div`
     background: ${({has, color}) => has ? color : ''};
-    grid-area: ${({ id }) => {
-        if (id > 26) {
-            return `${String.fromCharCode(96 + Math.floor(id/26))}${String.fromCharCode( 96 + (id - 26) )}`;
-        }
-        return String.fromCharCode( 96 + id );
-    }};
+    width: 30px;
+    height: 45px;
+
+    border: 2px solid black;
+    
+    &:not(:last-child) {
+        margin-right: 3px;
+    }
 `;
 
-export default StyledMinProperty;
+export default MinProperty;

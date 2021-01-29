@@ -13,6 +13,17 @@ const BoardContainer = styled.div`
     border: 2px solid black;
     background: black;
     font-family: 'Helvetica', sans-serif;
+
+    ${({businessActive}) => businessActive ? css`
+        &:after {
+            content: '';
+            display: block;
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.4);
+        }
+    ` : ''}
 `;
 
 export default BoardContainer;

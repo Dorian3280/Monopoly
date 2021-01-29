@@ -39,6 +39,7 @@ const Monopoly = () => {
     const [dice2, setDice2] = useState(1);
     const [history, setHistory] = useState([]);
     const [actions, setActions] = useState({});
+    const [businessActive, setBusinessActive] = useState(false);
 
     const [readyTrackerPlayers, trackerPlayers] = useTracker(() => {
         const publication = Meteor.subscribe('players.findAll');
@@ -345,7 +346,7 @@ const Monopoly = () => {
     }, [currentPlayer]);
 
     const boxesRender = useMemo(() => boxes.map((box) =>
-        <BoxContainer box={box} key={box.id} owned={players}>
+        <BoxContainer businessActive={businessActive} box={box} key={box.id} player={players !== undefined ? players.find(e => e.id === box.owned) : undefined}>
             {players
             .map((player) => player.location) // Array with location of players only
             .map((e, i) => box.id === e ? i : undefined) // Array with players on this box
@@ -398,7 +399,7 @@ const Monopoly = () => {
 
     return (
         <Container>
-            <BoardContainer>
+            <BoardContainer businessActive={businessActive}>
                 <ModalComponent
                     currentPlayer={currentPlayer}
                     boxes={boxes}

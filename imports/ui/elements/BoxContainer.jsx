@@ -56,21 +56,26 @@ const BoxContainer = styled(Box)`
     justify-content: space-between;
     width: ${({box}) => (box.type === 'corner') ? `113` : `75`}px;
     height: 113px;
+    
     ${({box}) => (box.grid.position === 'top') && `transform: rotate(180deg);`}
     ${({box}) => (box.grid.position === 'left') && `transform: rotate(90deg); transform-origin: 56px 56px;`}
     ${({box}) => (box.grid.position === 'right') && `transform: rotate(270deg); transform-origin: 38px 37px;`}
+    
+    ${({player}) => player ? css`
+        &:after {
+            content: "";
+            display: block;
+            width: 100%;
+            height: 8px;
+            background: ${player.color};
+            position: absolute;
+            top: -11px;
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
+        }
+    ` : ''}
 
-    &:after {
-        content: "";
-        display: block;
-        width: 25px;
-        height: 20px;
-        background: red;
-        border-radius: 50%;
-        position: absolute;
-        top: -30px;
-        left: 25px;
-    }
+    z-index: ${({businessActive}) => businessActive ? '1' : 'none'};
 `;
 
 export default BoxContainer;
