@@ -19,6 +19,7 @@ const ModalComponent = ({ currentPlayer, cards, boxes, showModal, buyProperty, n
             if ((currentPlayer.state === 'community') || (currentPlayer.state === 'chance')) {
                 const {index, order} = cards[currentPlayer.state];
                 setCard(cards[currentPlayer.state].cards[order[index]]);
+                //setCard(cards[currentPlayer.state].cards[12]);
             }
         }
     }, [currentPlayer, boxes, cards]);

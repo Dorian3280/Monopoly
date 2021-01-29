@@ -3,11 +3,18 @@ import React from 'react';
 import BusinessContainer from '/imports/ui/elements/BusinessContainer';
 import Transaction from '/imports/ui/elements/Transaction';
 
-const Business = () => {
+const Business = ({currentPlayer, build, sell, mortgage, unmortgage}) => {
+
+    const obj = (name) => ({
+        build,
+        sell,
+        mortgage,
+        unmortgage,
+    })[name](name)
 
     return (
         <BusinessContainer>
-            {['build', 'Sell', 'mortgage', 'Unmortgage'].map(e => <Transaction key={e}>{e.ucFirst()}</Transaction>)}
+            {['build', 'sell', 'mortgage', 'unmortgage'].map(e => <Transaction onClick={() => obj(e)} active={true} currentPlayer={currentPlayer} key={e}>{e.ucFirst()}</Transaction>)}
         </BusinessContainer>
     );
 };

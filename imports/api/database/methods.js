@@ -9,7 +9,7 @@ Meteor.methods({
         return undefined
     },
     'card.updateOwned': function updateOwned(boxID, playerID) {
-        Database.update({"boxes.idProperty": boxID}, {$set: {[`boxes.$.owned`]: playerID}});
+        Database.update({"boxes.id": boxID}, {$set: {[`boxes.$.owned`]: playerID}});
         return undefined;
     },
     'card.updateMortgaged': function updateMortgaged() {

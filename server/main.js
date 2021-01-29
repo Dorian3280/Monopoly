@@ -51,6 +51,8 @@ Meteor.startup(() => {
             state: "roll",
             didDouble: false,
             countDouble: 0,
+            turnInPrison: 0,
+            cardOutOfJail: false,
         }));
 
         Players.insert({ currentPlayerID: 0 });
@@ -62,6 +64,7 @@ Meteor.startup(() => {
             hotels: 12,
         });
     }
+
     if (Database.find().count() === 0) {
         const o = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
         for(var j, x, i = o.length; i; j = parseInt(Math.random() * i), x = o[--i], o[i] = o[j], o[j] = x);

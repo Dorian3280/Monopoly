@@ -33,14 +33,14 @@ export const chanceCards = [
         name: 'Chance',
         message: 'Vous êtes imposé pour les réparations de voirie à raison de : 40€ par appartement et 115€ par hôtel.',
         resume: '', // some texts here,
-        effect: {}, // some code here,
+        effect: {type: 'money', data: 0},
     },
     {
         type: 'chance',
         name: 'Chance',
         message: 'Faites des réparations dans toutes vos maisons. Versez pour chaque maison 25€. Versez pour chaque hôtel 10€.',
         resume: '', // some texts here,
-        effect: {}, // some code here,
+        effect: {type: 'money', data: 0},
     },
     {
         type: 'chance',
@@ -61,7 +61,7 @@ export const chanceCards = [
         name: 'Chance',
         message: 'Allez en prison. Rendez vous directement à la prison. Ne franchissez pas la case "Départ". Ne touchez pas 200€.',
         resume: 'Vous vous êtes téléporté jusqu\'à la case Prison',
-        effect: {type: 'teleportation', data: 11},
+        effect: {type: 'inJail', data: null},
     },
     {
         type: 'chance',
@@ -75,7 +75,7 @@ export const chanceCards = [
         name: 'Chance',
         message: 'Vous êtes libéré de prison. Cette carte peut être conservée jusqu\'à ce qu\'elle soit utilisée ou vendue.',
         resume: 'Vous avez reçu la carte "Libéré de prison".',
-        effect: {},
+        effect: {type: 'cardOutOfJail', data: null},
     },
     {
         message: 'La Banque vous verse un dividende de 50€.',

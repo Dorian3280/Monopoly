@@ -1,6 +1,5 @@
 import { Meteor } from 'meteor/meteor';
 import Players from '.';
-import Database from '../database/index'
 
 Meteor.methods({
     'player.updateCurrentPlayer': function updateCurrentPlayer() {
@@ -12,6 +11,10 @@ Meteor.methods({
         Players.update({ id }, { $set:  { location }})
         return undefined;
     },
+    'player.updateCardOutOfJail': function updateLocation(id, bool) {
+        Players.update({ id }, { $set:  { cardGetOutJail: bool }})
+        return undefined;
+    },
     'player.updateOwn': function updateOwn(id, boxID) {
         const gotIt = Players.findOne({id}, {fields : {own:1} }).own.indexOf(boxID) !== -1;
         return Players.update({ id }, { [gotIt ? "$pull" : "$push"]:  { own: boxID }});
@@ -20,7 +23,7 @@ Meteor.methods({
         return Players.update({ id }, { $set:  { state }});
     },
     'player.updateMoney': function updateMoney(id, amount) {
-        const money = Players.findOne({id}).money + amount;
+        const money = Players.find({id}).fetch()[0].money + amount;
         Players.update({ id }, { $set:  { money }});
         return money < 0;
     },

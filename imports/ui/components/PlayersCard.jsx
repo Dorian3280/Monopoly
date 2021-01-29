@@ -19,8 +19,8 @@ const PlayersCard = ({boxes, players}) => {
                     <PlayerProperties>{
                     boxes
                         .filter(e => Object.keys(e).indexOf('idProperty') !== -1) // Récupère que les cases de propriété
-                        .sort((e1, e2) => e1.test > e2.test) // Les tri par ordre croissant
-                        .map(box => <MinProperty has={player.own.indexOf(box.idProperty) !== -1} color={box.color} id={box.idProperty} key={box.idProperty}></MinProperty>)
+                        .sort((e1, e2) => e1.idProperty > e2.idProperty) // Les tri par ordre croissant
+                        .map((box, i) => <MinProperty has={player.own.indexOf(box.id) !== -1} color={box.color} id={i+1} key={box.id}></MinProperty>)
                     }</PlayerProperties>
                 </PlayerCard>
             )}

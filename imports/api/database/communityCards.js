@@ -39,7 +39,7 @@ export const communityCards = [
         name: 'Caisse de commnauté',
         message: 'Vous êtes libéré de prison. Cette carte peut être conservée jusqu\'à ce qu\'elle soit utilisée ou vendue.',
         resume: 'Vous avez reçu la carte "Libéré de prison".',
-        effect: () => {} // Some codes here
+        effect: {type: 'cardOutOfJail', data: null},
     },
     {
         type: 'community',
@@ -60,7 +60,7 @@ export const communityCards = [
         name: 'Caisse de commnauté',
         message: 'Payer une amende de 10€ ou bien tirez une carte "CHANCE"',
         resume: {}, //some text here,
-        effect: () => {} // some codes here;,
+        effect: {type: 'money', data: 0},
     },
     {
         type: 'community',
@@ -74,7 +74,7 @@ export const communityCards = [
         name: 'Caisse de commnauté',
         message: 'C\'est votre anniversaire: chaque joureur doit vous donner 10€.',
         resume: 'Tous les autres joueurs vous ont donné 10€.',
-        effect: {}, // some codes here;,
+        effect: {type: 'multiple', data: 10},
     },
     {
         type: 'community',
@@ -109,6 +109,6 @@ export const communityCards = [
         name: 'Caisse de commnauté',
         message: 'Allez en prison. Rendez vous directement à la prison. Ne franchissez pas la case "Départ". Ne touchez pas 200€.',
         resume: 'Vous vous êtes téléporté jusqu\'à la case Prison',
-        effect: {type: 'teleportation', data: 11},
+        effect: {type: 'inJail', data: null},
     }
 ];
