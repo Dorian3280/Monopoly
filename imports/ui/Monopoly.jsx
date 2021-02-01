@@ -22,6 +22,10 @@ import BoardContainer from '/imports/ui/elements/BoardContainer';
 import BoxContainer from '/imports/ui/elements/BoxContainer';
 import BoxCenter from '/imports/ui/elements/BoxCenter';
 import Token from '/imports/ui/elements/Token';
+import Cross from '/imports/ui/elements/Cross';
+import House from '/imports/ui/elements/House';
+import Hotel from '/imports/ui/elements/Hotel';
+import BuildContainer from '/imports/ui/elements/BuildContainer';
 
 import Players from '/imports/api/players/index';
 import Database from '/imports/api/database/index';
@@ -39,7 +43,6 @@ const Monopoly = () => {
     const [dice2, setDice2] = useState(1);
     const [history, setHistory] = useState([]);
     const [actions, setActions] = useState({});
-    const [businessActive, setBusinessActive] = useState(false);
 
     const [readyTrackerPlayers, trackerPlayers] = useTracker(() => {
         const publication = Meteor.subscribe('players.findAll');
@@ -136,7 +139,7 @@ const Monopoly = () => {
 
     useEffect(() => {
         if (currentPlayer.state === 'inJail') {
-            console.log(currentPlayer.id);
+            console.log('prison', currentPlayer.id);
         }
     }, [currentPlayer.id]);
 
@@ -158,10 +161,14 @@ const Monopoly = () => {
                     getInJail('double');
                 }
                 if (!isDouble && currentPlayer.didDouble) Meteor.call('player.resetDouble', currentPlayer.id)
-                if (isDouble) Meteor.call('player.didDouble', currentPlayer.id)
+                if (isDouble) {
+                    Meteor.call('player.didDouble', currentPlayer.id);
+                } else {
+                    console.log('la')
+                    Meteor.call('player.didRoll', currentPlayer.id);
+                }
                 setResultActionProcess('roll','result', {number, isDouble});
                 moveTo(number);
-                //moveTo(12);
             }
             x++;
         }, 150);
@@ -252,7 +259,13 @@ const Monopoly = () => {
 
                     // Carte de propriété
                     } else {
-                        amount = box.rent * ((players.find(e => e.id === box.owned).own.filter(e => box.membership.includes(e)).length === box.membership.length) ? 2 : 1);
+                        if (box.built > 0 && box.build < 5) {
+                            amount = box[`house_${box.built}`];
+                        } else if (box.build === 5) {
+                            amount = box.hotel;
+                        } else {
+                            amount = box.rent * ((players.find(e => e.id === box.owned).own.filter(e => box.membership.includes(e)).length === box.membership.length) ? 2 : 1);
+                        }
                     }
 
                     /* const amount = ({
@@ -285,7 +298,7 @@ const Monopoly = () => {
         const data = { name: box.name };
         transaction(-box.propertyCost);
         Meteor.call('player.updateOwn', playerID, boxID);
-        Meteor.call('card.updateOwned', boxID, playerID);
+        Meteor.call('property.updateOwned', boxID, playerID);
         Meteor.call('history.add', {createdAt: new Date(), type: 'purchase', playerID: currentPlayer.id, data});
         handleShowModal();
         setResultActionProcess('buyProperty','bought', box.name);
@@ -330,39 +343,84 @@ const Monopoly = () => {
     }, [currentPlayer]);
 
     const endTurn = useCallback(() => {
-        if (currentPlayer.state !== 'inJail') {
-            if (currentPlayer.didDouble) {
-                Meteor.call('player.updateState', currentPlayer.id, 'reroll');
-            } else {
-                Meteor.call('player.updateState', currentPlayer.id, 'endTurn');
-            }
+        console.log(currentPlayer)
+        if (!currentPlayer.didRoll) {
+            console.log('false didroll')
+            Meteor.call('player.updateState', currentPlayer.id, 'roll');
+        } else if (currentPlayer.didDouble) {
+            console.log('diddouble et pas prison')
+            Meteor.call('player.updateState', currentPlayer.id, 'reroll');
+        } else {
+            console.log('tout')
+            Meteor.call('player.updateState', currentPlayer.id, 'endTurn');
         }
-    }, [players, currentPlayer]);
+    }, [currentPlayer]);
 
     const toNextPlayer = useCallback(() => {
         Meteor.call('player.updateState', currentPlayer.id, 'roll');
+        Meteor.call('player.resetRoll', currentPlayer.id);
         Meteor.call('player.updateCurrentPlayer');
         Meteor.call('actions.clear');
     }, [currentPlayer]);
 
-    const boxesRender = useMemo(() => boxes.map((box) =>
-        <BoxContainer businessActive={businessActive} box={box} key={box.id} player={players !== undefined ? players.find(e => e.id === box.owned) : undefined}>
-            {players
-            .map((player) => player.location) // Array with location of players only
-            .map((e, i) => box.id === e ? i : undefined) // Array with players on this box
-            .filter(e => e !== undefined) // Clean Array
-            .map((e, i) => // Replace by player's token
-                <Token
-                    key={e}
-                    id={e}
-                    color={players[e].color}
-                    locationType={box.type}
-                    locationSide={box.grid.position}
-                    accumulator={i}
-                ></Token> 
-            )}
-        </BoxContainer>)
-    , [players, boxes]);
+    const propertyBusiness = useCallback((box) => {
+        Meteor.call(`property.update${currentPlayer.state.ucFirst()}`, box.id);
+        if (currentPlayer.state === 'build') {
+            Meteor.call('player.updateMoney', currentPlayer.id, -box.houseCost)
+        }
+        if (currentPlayer.state === 'sell') {
+            Meteor.call('player.updateMoney', currentPlayer.id, box.houseCost/2)
+        }
+        if (currentPlayer.state === 'mortgage') {
+            Meteor.call('player.updateMoney', currentPlayer.id, box.mortgageCost)
+        }
+        if (currentPlayer.state === 'unmortgage') {
+            Meteor.call('player.updateMoney', currentPlayer.id, -(box.mortgageCost + Math.ceil(0.1*box.mortgageCost)))
+        }
+    }, [currentPlayer.state]);
+
+    const boxesRender = useMemo(() => boxes.map((box) => {
+        let isPropertyActive = false;
+        
+        if (['build', 'sell', 'mortgage', 'unmortgage'].includes(currentPlayer.state) && box.idProperty !== undefined && currentPlayer.own.indexOf(box.id) !== -1) {
+            if (currentPlayer.state === 'build' && box.membership.every(e => currentPlayer.own.indexOf(e) && !e.mortgaged) && box.built < 5) {
+                isPropertyActive = true;
+            }
+            if (currentPlayer.state === 'sell' && box.built === 0) {
+                isPropertyActive = true;
+            }
+            if (currentPlayer.state === 'mortgage' && !box.mortgaged && box.built === 0) {
+                isPropertyActive = true;
+            }
+            if (currentPlayer.state === 'unmortgage' && box.mortgaged) {
+                isPropertyActive = true;
+            }
+        }
+        
+        return (
+            <BoxContainer active={isPropertyActive} onClick={() => isPropertyActive ? propertyBusiness(box) : undefined} isMortgaged={box.mortgaged} box={box} key={box.id} player={players !== undefined ? players.find(e => e.id === box.owned) : undefined}>
+                {players
+                .map((player) => player.location) // Array with location of players only
+                .map((e, i) => box.id === e ? i : undefined) // Array with players on this box
+                .filter(e => e !== undefined) // Clean Array
+                .map((e, i) => // Replace by player's token
+                    <Token
+                        key={e}
+                        id={e}
+                        color={players[e].color}
+                        locationType={box.type}
+                        locationSide={box.grid.position}
+                        accumulator={i}
+                    ></Token> 
+                )}
+                {box.mortgaged ? <Cross/> : ''}
+                <BuildContainer>
+                    {box.built !== undefined ? (box.built < 5 ? Array.from(Array(box.built === undefined ? 0 : box.built).keys()).map(e => <House key={e}/>) : <Hotel/>) : ''}
+                </BuildContainer>
+                
+            </BoxContainer>
+        )
+    }), [currentPlayer, players, boxes, propertyBusiness]);
 
     const historyRender = useMemo(() => {
         if (players.length > 0 && boxes.length > 0) {
@@ -382,24 +440,24 @@ const Monopoly = () => {
     const isPlayersLoad = useMemo(() => currentPlayer !== undefined ? currentPlayer : false, [players, currentPlayer]);
     
     const build = useCallback(() => {
-        console.log(1)
-    }, []);
+        Meteor.call('player.updateState', currentPlayer.id, 'build')
+    }, [currentPlayer.id]);
 
     const sell = useCallback(() => {
-        console.log(2)
-    }, []);
+        Meteor.call('player.updateState', currentPlayer.id, 'sell')
+    }, [currentPlayer.id]);
 
     const mortgage = useCallback(() => {
-        console.log(3)
-    }, []);
+        Meteor.call('player.updateState', currentPlayer.id, 'mortgage')
+    }, [currentPlayer.id]);
 
     const unmortgage = useCallback(() => {
-        console.log(4)
-    }, []);
+        Meteor.call('player.updateState', currentPlayer.id, 'unmortgage')
+    }, [currentPlayer.id]);
 
     return (
         <Container>
-            <BoardContainer businessActive={businessActive}>
+            <BoardContainer businessActive={['build', 'sell', 'mortgage', 'unmortgage'].includes(isPlayersLoad.state)}>
                 <ModalComponent
                     currentPlayer={currentPlayer}
                     boxes={boxes}
@@ -423,6 +481,7 @@ const Monopoly = () => {
                         <Actions>
                             <ActionButton active={isPlayersLoad.state === 'roll' || isPlayersLoad.state === 'reroll'} onClick={() => (isPlayersLoad.state === 'roll'|| isPlayersLoad.state === 'reroll') ? rollTheDice() : undefined}><Image width={40} height={40} src={`../../../images/dices.png`}></Image></ActionButton>
                             <ActionButton active={isPlayersLoad} onClick={handleShowModal}><Image width={30} height={40} src={`../../../images/property.jpg`}></Image></ActionButton>
+                            <ActionButton active={['build', 'sell', 'mortgage', 'unmortgage'].includes(isPlayersLoad.state)} special onClick={() => ['build', 'sell', 'mortgage', 'unmortgage'].includes(isPlayersLoad.state) ? endTurn() : undefined}><Image width={40} height={40} src={`../../../images/done.png`}></Image></ActionButton>
                             <ActionButton active={isPlayersLoad.state === 'endTurn'} onClick={() => isPlayersLoad.state === 'endTurn' ? toNextPlayer() : undefined}><Image width={40} height={40} src={`../../../images/endTurn.png`}></Image></ActionButton>
                         </Actions>
                     </TurnPlayerContainer>

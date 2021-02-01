@@ -4,9 +4,6 @@ export const boxes = [
         type: 'corner',
         name: 'Départ',
         pseudo: 'depart',
-        color: null,
-        owned: null,
-        mortgaged: null,
         grid: { position: 'top-left', row: 1, column: 1}
     },
     {

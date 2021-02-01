@@ -1,6 +1,6 @@
 import styled, { css } from 'styled-components';
 
-const Transaction = styled.div`
+const Transaction = styled.button`
     width: 230px;
     height: 100px;
     font-size: 1.5rem;
@@ -26,7 +26,15 @@ const Transaction = styled.div`
     &:active {
       box-shadow: inset 0 0 0 4px #92DE34;
     }
-  `: ''}
+    &:focus {
+      background: #ff9100;
+    }
+  `: css`
+    opacity: 0.5;
+  `}
+
+  ${({whichActive}) => whichActive ? css`
+  ` : ''}
 `;
 
 export default Transaction;

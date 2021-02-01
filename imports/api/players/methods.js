@@ -27,11 +27,17 @@ Meteor.methods({
         Players.update({ id }, { $set:  { money }});
         return money < 0;
     },
+    'player.didRoll': function didRoll(id) {
+        return Players.update({ id }, {$set: {didRoll: true}})
+    },
+    'player.resetRoll': function resetRoll(id) {
+        return Players.update({ id }, {$set: {didRoll: false}})
+    },
     'player.didDouble': function didDouble(id) {
         Players.update({ id }, {$set: {didDouble: true}})
-        Players.update({ id }, {$inc: {countCouble: 1}})
+        return Players.update({ id }, {$inc: {countCouble: 1}})
     },
-    'player.resetDouble': function didDouble(id) {
-        Players.update({ id }, {$set: {didDouble: false, countCouble: 0}})
+    'player.resetDouble': function resetDouble(id) {
+        return Players.update({ id }, {$set: {didDouble: false, countDouble: 0}})
     }
 });

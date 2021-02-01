@@ -6,7 +6,8 @@ import BoxName from '/imports/ui/elements/BoxName';
 import Price from '/imports/ui/elements/Price';
 import Flex from '/imports/ui/elements/Flex';
 
-const Box = ( {className, box, children} ) => {
+const Box = ( {className, box, children, onClick} ) => {
+    
     const Component =  useMemo(() => {
         if ((box.type === 'property') || (box.type === 'station') || (box.type === 'company'))
             return (
@@ -38,7 +39,7 @@ const Box = ( {className, box, children} ) => {
         return null;
     }, []);
 
-    return <div className={className}>{Component}{children}</div>;
+    return <div className={className} onClick={onClick}>{Component}{children}</div>;
 }
 
 const BoxContainer = styled(Box)`
@@ -75,7 +76,10 @@ const BoxContainer = styled(Box)`
         }
     ` : ''}
 
-    z-index: ${({businessActive}) => businessActive ? '1' : 'none'};
+    ${({active}) => active ? css`
+        z-index: 1;
+        cursor: pointer;
+    ` : ''}
 `;
 
 export default BoxContainer;

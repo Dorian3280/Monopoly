@@ -49,6 +49,7 @@ Meteor.startup(() => {
             bankruptcy: false,
             location: 1,
             state: "roll",
+            didRoll: false,
             didDouble: false,
             countDouble: 0,
             turnInPrison: 0,
@@ -57,14 +58,14 @@ Meteor.startup(() => {
 
         Players.insert({ currentPlayerID: 0 });
     }
-
+    
     if (Bank.find().count() === 0) {
         Bank.insert({
             houses: 32,
             hotels: 12,
         });
     }
-
+    
     if (Database.find().count() === 0) {
         const o = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
         for(var j, x, i = o.length; i; j = parseInt(Math.random() * i), x = o[--i], o[i] = o[j], o[j] = x);

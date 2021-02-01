@@ -22,6 +22,8 @@ const ButtonRollTheDice = styled.div`
         }
     }
     ` : ''}
+
+    z-index: ${({special}) => special ? '1' : 'none'};
 `;
 
 export default ButtonRollTheDice;

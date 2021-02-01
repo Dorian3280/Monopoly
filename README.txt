@@ -9,6 +9,8 @@ OR
 - Use Canvas
 
 - For myself =>
+    Bug paiment des compagnies
+    Bug tombé sur sa propre propriété, on s'auto paye.
 
 
 // Command Line

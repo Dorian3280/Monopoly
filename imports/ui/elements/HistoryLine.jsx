@@ -19,7 +19,7 @@ const HistoryLine = ({players, boxes, type, name, color, data}) => {
             break;
         case 'teleportation':
             box = boxes.find(e => e.id === data);
-            typeInFrench = 'Déplacement';
+            typeInFrench = 'Arrêt';
             description = <><Span weight={'bold'} color={color}>{name}</Span>{` se déplace jusqu'à `}<Span weight={'bold'} color={box.color}>{box.name}</Span></>;
             break;
         case 'money':
@@ -37,6 +37,14 @@ const HistoryLine = ({players, boxes, type, name, color, data}) => {
         case 'salary':
             typeInFrench = 'Salaire';
             description = <><Span weight={'bold'} color={color}>{name}</Span>{` a reçu 200 € de salaire`}</>;
+            break;
+        case 'inJail':
+            typeInFrench = 'Prison';
+            description = <><Span weight={'bold'} color={color}>{name}</Span>{` va en prison`}</>;
+            break;
+        case 'outOfJail':
+            typeInFrench = 'Liberté';
+            description = <><Span weight={'bold'} color={color}>{name}</Span>{` sort de prison`}</>;
             break;
         case 'cardOutOfJail':
             typeInFrench = 'Grâce';

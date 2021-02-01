@@ -32,7 +32,7 @@ const playerProperties = ({boxes, player, className}) => {
                 )
             );
         }
-    }, [boxes.length]);
+    }, [boxes]);
 
     return (
         <div className={className}>
